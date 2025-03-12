@@ -132,7 +132,7 @@ h3 {
 }
 
 /* MERCHANT + ITEM CARDS */
-.merchant, .item {
+.merchant, .item, .coupon-card {
   align-items: center;
   background-color: #fff;
   border-radius: 8px;

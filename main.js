@@ -236,20 +236,41 @@ function getMerchantCoupons(event) {
   let merchantId = event.target.closest("article").id.split('-')[1]
   console.log("Merchant ID:", merchantId)
 
-  fetchData(`merchants/${merchantId}`)
+  document.querySelector("#showing-text").innerText = `All Coupons for Merchant #${merchantId}`;
+
+  document.querySelector("#add-new-button").classList.add("hidden");
+
+  fetchData(`merchants/${merchantId}/coupons`)
   .then(couponData => {
     console.log("Coupon data from fetch:", couponData)
     displayMerchantCoupons(couponData);
   })
 }
 
-function displayMerchantCoupons(coupons) {
-  show([couponsView])
-  hide([merchantsView, itemsView])
+function displayMerchantCoupons(couponData) {
+  show([couponsView]);
+  hide([merchantsView, itemsView]);
 
-  couponsView.innerHTML = `
-    <p>Coupon data will go here.</p>
-  `
+  couponsView.innerHTML = "";
+
+  if (couponData.data.length === 0) { 
+    couponsView.innerHTML = "<p>No coupons available for this merchant</p>";
+    return;
+  }
+
+  couponData.data.forEach((coupon) => {
+    const couponElement = document.createElement("div");
+    couponElement.classList.add("coupon-card");
+
+    couponElement.innerHTML = `
+      <h3>${coupon.attributes.name}</h3>
+      <p><strong>Code:</strong> ${coupon.attributes.code}</p>
+      <p><strong>Discount:</strong> ${coupon.attributes.discount_type === "percent" ? `${Math.round(coupon.attributes.discount_value)}%` : `$${Math.round(coupon.attributes.discount_value)}`}</p>
+      <p><strong>Active:</strong> ${coupon.attributes.active ? "Active" : "Inactive"}</p>
+    `;
+
+    couponsView.appendChild(couponElement);
+  });
 }
 
 //Helper Functions
